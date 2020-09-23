@@ -1,6 +1,7 @@
 package com.capgemini.Online_Wallet_System.ServiceClass;
 
 import java.time.LocalDateTime;
+import java.util.Set;
 
 import javax.transaction.Transactional;
 
@@ -28,6 +29,26 @@ public class ServiceClass {
 	{
 		return walletUserDao.save(user);
 	}
+	//user login 
+	public WalletUser userLogin(int userId,String password)
+	{
+		if(walletUserDao.existsById(userId))
+		{
+			WalletUser user=walletUserDao.getOne(userId);
+			if(user.getPassword()==password)
+			{
+				return user;
+			}
+			else
+			{
+				return null;
+			}
+		}
+		else
+		{
+			return null;
+		}
+	}
 	//Creating wallet account to a particular user
 	public WalletAccount addAccount(WalletAccount account)
 	{
@@ -36,7 +57,15 @@ public class ServiceClass {
 	//Adding money to user wallet account
 	public WalletAccount addMoney(WalletAccount walletAccount)
 	{
-		return walletAccountDao.save(walletAccount);
+		int accountId=walletAccount.getAccountId();
+		if(walletAccountDao.existsById(accountId))
+		{
+			return walletAccountDao.save(walletAccount);
+		}
+		else
+		{
+			return null;
+		}
 	}
 	//To show User wallet account balance
 	public WalletAccount retriveBalance(int userId)
@@ -88,6 +117,19 @@ public class ServiceClass {
 		else
 		{
 			return "Receiver AccountId does not exist";
+		}
+	}
+	//Retriving transaction details 
+	public Set<AccountTransactions> transactionDetails(int accountId)
+	{
+		if(walletAccountDao.existsById(accountId))
+		{
+			WalletAccount account=walletAccountDao.getOne(accountId);
+			return account.getWalletTransactions();
+		}
+		else
+		{
+			return null;
 		}
 	}
 
