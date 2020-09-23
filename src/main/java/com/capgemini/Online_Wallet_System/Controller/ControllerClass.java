@@ -55,10 +55,10 @@ public class ControllerClass {
 		
 	}
 	//Creating payment wallet account
-	@PostMapping("/createaccount")
-	public ResponseEntity<String> createAccount(@RequestBody WalletAccount walletAccount)
+	@PostMapping("/createaccount/{userId}")
+	public ResponseEntity<String> createAccount(@PathVariable("userId") int userId,@RequestBody WalletAccount walletAccount)
 	{
-		WalletAccount account=service.addAccount(walletAccount);
+		WalletAccount account=service.addAccount(userId,walletAccount);
 		if (account == null) 
 		{
 			throw new IdNotFoundException("Wallet account not created");
@@ -85,23 +85,15 @@ public class ControllerClass {
 		
 	}
 	//To show payment wallet account balance
-	@GetMapping("/accountbalance/{userId}")
-	public ResponseEntity<WalletAccount> accountBalance(@PathVariable("userId") int userId)
+	@GetMapping("/accountbalance/{accountId}")
+	public ResponseEntity<Double> accountBalance(@PathVariable("accountId") int accountId)
 	{
-		WalletAccount accountDetails=service.retriveBalance(userId);
-		if (accountDetails == null) 
-		{
-			throw new IdNotFoundException("AccountId is Invalid");
-		} 
-		else 
-		{
-			return new ResponseEntity<WalletAccount>(accountDetails, new HttpHeaders(), HttpStatus.OK);
-		}	
-		
+		double accountBalance=service.retriveBalance(accountId);
+		return new ResponseEntity<Double>(accountBalance, new HttpHeaders(), HttpStatus.OK);
 	}
 	//To transfer fund from one account to another account
-	@GetMapping("/transferfund/{senderuserId}/{recieveraccountId}/{amount}")
-	public ResponseEntity<String> transferFund(@PathVariable("senderuserId") int senderAccountId,@PathVariable("recieveraccountId") int receiverAccountId,@PathVariable("amount") double amount)
+	@GetMapping("/transferfund/{senderaccountId}/{recieveraccountId}/{amount}")
+	public ResponseEntity<String> transferFund(@PathVariable("senderaccountId") int senderAccountId,@PathVariable("recieveraccountId") int receiverAccountId,@PathVariable("amount") double amount)
 	{
 		String status=service.transferFunds(senderAccountId, receiverAccountId, amount);
 		return new ResponseEntity<String>(status, new HttpHeaders(), HttpStatus.OK);
